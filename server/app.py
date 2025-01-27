@@ -25,7 +25,7 @@ def create_director():
 def create_movie():
     data = request.get_json()
     movie = Movie(
-        name=data['name'],
+        title=data['title'],
         director_id=data['director_id']
     )
     db.session.add(movie)
@@ -37,7 +37,7 @@ def get_movies():
     movies = Movie.query.all()
     return jsonify([{
         'id': movie.id,
-        'name': movie.name,
+        'title': movie.title,
         'director': movie.director.name
     } for movie in movies])
 
@@ -46,7 +46,7 @@ def get_director_movies(director_id):
     movies = Movie.query.filter_by(director_id=director_id).all()
     return jsonify([{
         'id': movie.id,
-        'name': movie.name
+        'title': movie.title
     } for movie in movies])
 
 @app.route('/api/movies/<int:movie_id>/reviews', methods=['POST'])

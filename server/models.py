@@ -13,7 +13,7 @@ class Director(db.Model):
 class Movie(db.Model):
     __tablename__ = 'movies'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
     director_id = db.Column(db.Integer, db.ForeignKey('directors.id'), nullable=False)
     reviews = db.relationship('Review', backref='movie', lazy=True)
     ratings = db.relationship('Rating', backref='movie', lazy=True)
