@@ -9,6 +9,12 @@ app.config.from_object(Config)
 CORS(app)
 db.init_app(app)
 
+# Root route
+@app.route('/')
+def home():
+    return jsonify({'message': 'Welcome to Movie-App API'}), 200
+
+# Director routes
 @app.route('/api/directors', methods=['POST'])
 def create_director():
     data = request.get_json()
@@ -21,6 +27,17 @@ def create_director():
     db.session.commit()
     return jsonify({'message': 'Director created successfully'}), 201
 
+@app.route('/api/directors', methods=['GET'])
+def get_directors():
+    directors = Director.query.all()
+    return jsonify([{
+        'id': director.id,
+        'name': director.name,
+        'age': director.age,
+        'gender': director.gender
+    } for director in directors])
+
+# Movie routes
 @app.route('/api/movies', methods=['POST'])
 def create_movie():
     data = request.get_json()
@@ -49,11 +66,12 @@ def get_director_movies(director_id):
         'title': movie.title
     } for movie in movies])
 
+# Review routes
 @app.route('/api/movies/<int:movie_id>/reviews', methods=['POST'])
 def create_review(movie_id):
     data = request.get_json()
     
-    # First create the rating
+    # First create rating
     rating = Rating(
         movie_id=movie_id,
         rating=data['rating']
@@ -61,7 +79,7 @@ def create_review(movie_id):
     db.session.add(rating)
     db.session.commit()
     
-    # Then create the review
+    # Then create review
     review = Review(
         movie_id=movie_id,
         rating_id=rating.id,
@@ -69,7 +87,17 @@ def create_review(movie_id):
     )
     db.session.add(review)
     db.session.commit()
-    return jsonify({'message': 'Review and rating created successfully'}), 201
+    
+    return jsonify({'message': 'Review created successfully'}), 201
+
+@app.route('/api/movies/<int:movie_id>/reviews', methods=['GET'])
+def get_movie_reviews(movie_id):
+    reviews = Review.query.filter_by(movie_id=movie_id).all()
+    return jsonify([{
+        'id': review.id,
+        'review': review.review,
+        'rating': Rating.query.get(review.rating_id).rating
+    } for review in reviews])
 
 @app.route('/api/reviews/<int:review_id>', methods=['PUT'])
 def update_review(review_id):
@@ -89,6 +117,19 @@ def delete_review(review_id):
     db.session.delete(review)
     db.session.commit()
     return jsonify({'message': 'Review deleted successfully'})
+
+# Error handlers
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'Not found'}), 404
+
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({'error': 'Bad request'}), 400
+
+@app.errorhandler(500)
+def server_error(error):
+    return jsonify({'error': 'Internal server error'}), 500
 
 # Create database tables
 with app.app_context():

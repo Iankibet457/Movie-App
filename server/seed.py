@@ -1,5 +1,5 @@
 from app import app, db
-from models import Director, Movie, Review
+from models import Director, Movie, Rating, Review
 from datetime import datetime
 
 def seed_database():
@@ -9,8 +9,16 @@ def seed_database():
         db.create_all()
 
         # Add sample directors
-        director1 = Director(name="Christopher Nolan")
-        director2 = Director(name="Martin Scorsese")
+        director1 = Director(
+            name="Christopher Nolan",
+            age=52,
+            gender="Male"
+        )
+        director2 = Director(
+            name="Martin Scorsese",
+            age=81,
+            gender="Male"
+        )
         
         db.session.add_all([director1, director2])
         db.session.commit()
@@ -18,28 +26,39 @@ def seed_database():
         # Add sample movies
         movie1 = Movie(
             title="Inception",
-            release_date=datetime.strptime("2010-07-16", "%Y-%m-%d").date(),
             director_id=director1.id
         )
         movie2 = Movie(
             title="The Departed",
-            release_date=datetime.strptime("2006-10-06", "%Y-%m-%d").date(),
             director_id=director2.id
         )
         
         db.session.add_all([movie1, movie2])
         db.session.commit()
 
+        # Add sample ratings
+        rating1 = Rating(
+            movie_id=movie1.id,
+            rating=5
+        )
+        rating2 = Rating(
+            movie_id=movie2.id,
+            rating=5
+        )
+        
+        db.session.add_all([rating1, rating2])
+        db.session.commit()
+
         # Add sample reviews
         review1 = Review(
-            content="A masterpiece of modern cinema",
-            rating=5,
-            movie_id=movie1.id
+            movie_id=movie1.id,
+            rating_id=rating1.id,
+            review="A masterpiece of modern cinema"
         )
         review2 = Review(
-            content="Brilliant performances all around",
-            rating=5,
-            movie_id=movie2.id
+            movie_id=movie2.id,
+            rating_id=rating2.id,
+            review="Brilliant performances all around"
         )
         
         db.session.add_all([review1, review2])
