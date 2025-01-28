@@ -120,6 +120,24 @@ def delete_review(review_id):
     db.session.commit()
     return jsonify({'message': 'Review deleted successfully'})
 
+@app.route('/api/reviews', methods=['GET'])
+def get_all_reviews():
+    reviews = Review.query.all()
+    return jsonify([{
+        'id': review.id,
+        'movie_id': review.movie_id,
+        'rating_id': review.rating_id,
+        'review': review.review
+    } for review in reviews])
+
+@app.route('/api/ratings', methods=['GET'])
+def get_all_ratings():
+    ratings = Rating.query.all()
+    return jsonify([{
+        'id': rating.id,
+        'movie_id': rating.movie_id,
+        'rating': rating.rating
+    } for rating in ratings])
 
 @app.errorhandler(404)
 def not_found(error):
