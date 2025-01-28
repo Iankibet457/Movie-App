@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_migrate import Migrate
 from models import db, Director, Movie, Review, Rating
 from config import Config
 
@@ -8,13 +9,14 @@ app.config.from_object(Config)
 
 CORS(app)
 db.init_app(app)
+migrate = Migrate(app, db)
 
-# Root route
+
 @app.route('/')
 def home():
     return jsonify({'message': 'Welcome to Movie-App API'}), 200
 
-# Director routes
+
 @app.route('/api/directors', methods=['POST'])
 def create_director():
     data = request.get_json()
@@ -37,7 +39,7 @@ def get_directors():
         'gender': director.gender
     } for director in directors])
 
-# Movie routes
+
 @app.route('/api/movies', methods=['POST'])
 def create_movie():
     data = request.get_json()
@@ -66,12 +68,12 @@ def get_director_movies(director_id):
         'title': movie.title
     } for movie in movies])
 
-# Review routes
+
 @app.route('/api/movies/<int:movie_id>/reviews', methods=['POST'])
 def create_review(movie_id):
     data = request.get_json()
     
-    # First create rating
+    
     rating = Rating(
         movie_id=movie_id,
         rating=data['rating']
@@ -79,7 +81,7 @@ def create_review(movie_id):
     db.session.add(rating)
     db.session.commit()
     
-    # Then create review
+    
     review = Review(
         movie_id=movie_id,
         rating_id=rating.id,
@@ -110,7 +112,7 @@ def update_review(review_id):
 @app.route('/api/reviews/<int:review_id>', methods=['DELETE'])
 def delete_review(review_id):
     review = Review.query.get_or_404(review_id)
-    # Get associated rating
+    
     rating = Rating.query.get(review.rating_id)
     if rating:
         db.session.delete(rating)
@@ -118,7 +120,7 @@ def delete_review(review_id):
     db.session.commit()
     return jsonify({'message': 'Review deleted successfully'})
 
-# Error handlers
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Not found'}), 404
@@ -131,7 +133,7 @@ def bad_request(error):
 def server_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
-# Create database tables
+
 with app.app_context():
     db.create_all()
 

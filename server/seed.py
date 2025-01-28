@@ -4,11 +4,11 @@ from datetime import datetime
 
 def seed_database():
     with app.app_context():
-        # Clear existing data
+        
         db.drop_all()
         db.create_all()
 
-        # Add sample directors
+        
         director1 = Director(
             name="Christopher Nolan",
             age=52,
@@ -23,7 +23,7 @@ def seed_database():
         db.session.add_all([director1, director2])
         db.session.commit()
 
-        # Add sample movies
+        
         movie1 = Movie(
             title="Inception",
             director_id=director1.id
@@ -36,7 +36,7 @@ def seed_database():
         db.session.add_all([movie1, movie2])
         db.session.commit()
 
-        # Add sample ratings
+    
         rating1 = Rating(
             movie_id=movie1.id,
             rating=5
@@ -49,7 +49,7 @@ def seed_database():
         db.session.add_all([rating1, rating2])
         db.session.commit()
 
-        # Add sample reviews
+        
         review1 = Review(
             movie_id=movie1.id,
             rating_id=rating1.id,
