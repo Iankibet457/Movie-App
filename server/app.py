@@ -27,7 +27,7 @@ def create_director():
     )
     db.session.add(director)
     db.session.commit()
-    return jsonify({'message': 'Director created successfully'}), 201
+    return jsonify({'message': 'Director created successfully', 'id': director.id}), 201
 
 @app.route('/api/directors', methods=['GET'])
 def get_directors():
@@ -49,7 +49,7 @@ def create_movie():
     )
     db.session.add(movie)
     db.session.commit()
-    return jsonify({'message': 'Movie created successfully'}), 201
+    return jsonify({'message': 'Movie created successfully', 'id': movie.id}), 201
 
 @app.route('/api/movies', methods=['GET'])
 def get_movies():
@@ -138,6 +138,20 @@ def get_all_ratings():
         'movie_id': rating.movie_id,
         'rating': rating.rating
     } for rating in ratings])
+
+@app.route('/api/directors/<int:director_id>', methods=['DELETE'])
+def delete_director(director_id):
+    director = Director.query.get_or_404(director_id)
+    db.session.delete(director)
+    db.session.commit()
+    return jsonify({'message': 'Director deleted successfully'}), 200
+
+@app.route('/api/movies/<int:movie_id>', methods=['DELETE'])
+def delete_movie(movie_id):
+    movie = Movie.query.get_or_404(movie_id)
+    db.session.delete(movie)
+    db.session.commit()
+    return jsonify({'message': 'Movie deleted successfully'}), 200
 
 @app.errorhandler(404)
 def not_found(error):
