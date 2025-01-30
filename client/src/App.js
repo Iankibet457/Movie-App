@@ -170,8 +170,8 @@ const App = () => {
     };
 
     return (
-        <main className="max-w-4xl mx-auto p-4">
-            <h2>Directors</h2>
+        <main className="max-w-4xl mx-auto p-4 bg-gray-100">
+            <h2 className="text-2xl font-bold mb-4">Directors</h2>
             <input
                 type="text"
                 value={searchDirector}
@@ -181,7 +181,8 @@ const App = () => {
             />
             <NewDirector onAddDirector={handleAddDirector} />
             <DirectorList directors={displayedDirectors} onDeleteDirector={handleDeleteDirector} />
-            <h2>Movies</h2>
+            
+            <h2 className="text-2xl font-bold mt-8 mb-4">Movies</h2>
             <input
                 type="text"
                 value={searchMovie}
@@ -191,7 +192,8 @@ const App = () => {
             />
             <NewMovie onAddMovie={handleAddMovie} />
             <MovieList movies={displayedMovies} onDeleteMovie={handleDeleteMovie} onSelectMovie={handleSelectMovie} />
-            <h2>Reviews</h2>
+            
+            <h2 className="text-2xl font-bold mt-8 mb-4">Reviews</h2>
             {selectedMovieId && (
                 <ReviewList 
                     reviews={reviews} 
