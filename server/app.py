@@ -153,6 +153,25 @@ def delete_movie(movie_id):
     db.session.commit()
     return jsonify({'message': 'Movie deleted successfully'}), 200
 
+@app.route('/api/directors/<int:director_id>', methods=['PUT'])
+def update_director(director_id):
+    data = request.get_json()
+    director = Director.query.get_or_404(director_id)
+    director.name = data.get('name', director.name)
+    director.age = data.get('age', director.age)
+    director.gender = data.get('gender', director.gender)
+    db.session.commit()
+    return jsonify({'message': 'Director updated successfully'}), 200
+
+@app.route('/api/movies/<int:movie_id>', methods=['PUT'])
+def update_movie(movie_id):
+    data = request.get_json()
+    movie = Movie.query.get_or_404(movie_id)
+    movie.title = data.get('title', movie.title)
+    movie.director_id = data.get('director_id', movie.director_id)
+    db.session.commit()
+    return jsonify({'message': 'Movie updated successfully'}), 200
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Not found'}), 404

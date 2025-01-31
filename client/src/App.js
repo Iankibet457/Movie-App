@@ -6,6 +6,8 @@ import MovieList from './components/MovieList';
 import NewDirector from './components/NewDirector';
 import NewMovie from './components/NewMovie';
 import ReviewList from './components/ReviewList';
+import Header from './components/Header';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 const App = () => {
     const [directors, setDirectors] = useState([]);
@@ -16,13 +18,13 @@ const App = () => {
     const [searchMovie, setSearchMovie] = useState("");
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/directors")
+        fetch("https://movie-deployment-1.onrender.com/api/directors")
             .then((response) => response.json())
             .then((data) => setDirectors(data));
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/movies")
+        fetch("https://movie-deployment-1.onrender.com/api/movies")
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -42,7 +44,7 @@ const App = () => {
     }, []);
 
     const fetchReviews = (movieId) => {
-        fetch(`http://localhost:5000/api/movies/${movieId}/reviews`)
+        fetch(`https://movie-deployment-1.onrender.com/api/movies/${movieId}/reviews`)
             .then((response) => response.json())
             .then((data) => setReviews(data));
     };
@@ -54,7 +56,7 @@ const App = () => {
 
     const handleAddReview = (newReview) => {
         if (selectedMovieId) {
-            fetch(`http://localhost:5000/api/movies/${selectedMovieId}/reviews`, {
+            fetch(`https://movie-deployment-1.onrender.com/api/movies/${selectedMovieId}/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +74,7 @@ const App = () => {
     };
 
     const handleDeleteReview = (id) => {
-        fetch(`http://localhost:5000/api/reviews/${id}`, {
+        fetch(`https://movie-deployment-1.onrender.com/api/reviews/${id}`, {
             method: 'DELETE',
         })
         .then(response => {
@@ -98,7 +100,7 @@ const App = () => {
     );
 
     const handleAddDirector = (newDirector) => {
-        fetch("http://localhost:5000/api/directors", {
+        fetch("https://movie-deployment-1.onrender.com/api/directors", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -116,7 +118,7 @@ const App = () => {
     };
 
     const handleAddMovie = (newMovie) => {
-        fetch("http://localhost:5000/api/movies", {
+        fetch("https://movie-deployment-1.onrender.com/api/movies", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -134,7 +136,7 @@ const App = () => {
     };
 
     const handleDeleteDirector = (id) => {
-    fetch(`http://localhost:5000/api/directors/${id}`, {
+    fetch(`https://movie-deployment-1.onrender.com/api/directors/${id}`, {
         method: 'DELETE',
     })
     .then(response => {
@@ -152,7 +154,7 @@ const App = () => {
 };
 
     const handleDeleteMovie = (id) => {
-        fetch(`http://localhost:5000/api/movies/${id}`, {
+        fetch(`https://movie-deployment-1.onrender.com/api/movies/${id}`, {
             method: 'DELETE',
         })
         .then(response => {
@@ -169,8 +171,45 @@ const App = () => {
         });
     };
 
+    const handleUpdateDirector = (updatedDirector) => {
+        fetch(`https://movie-deployment-1.onrender.com/api/directors/${updatedDirector.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedDirector),
+        })
+        .then(response => response.json())
+        .then(() => {
+            setDirectors(directors.map(director => director.id === updatedDirector.id ? updatedDirector : director));
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    };
+
+    const handleUpdateMovie = (updatedMovie) => {
+        fetch(`https://movie-deployment-1.onrender.com/api/movies/${updatedMovie.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedMovie),
+        })
+        .then(response => response.json())
+        .then(() => {
+            setMovies(movies.map(movie => movie.id === updatedMovie.id ? updatedMovie : movie));
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    };
+
     return (
+        
         <main className="max-w-4xl mx-auto p-4 bg-gray-100">
+            <Header/>
+            
             <h2 className="text-2xl font-bold mb-4">Directors</h2>
             <input
                 type="text"
@@ -180,7 +219,7 @@ const App = () => {
                 className="border border-gray-300 rounded-lg p-2 w-full mb-4"
             />
             <NewDirector onAddDirector={handleAddDirector} />
-            <DirectorList directors={displayedDirectors} onDeleteDirector={handleDeleteDirector} />
+            <DirectorList directors={displayedDirectors} onDeleteDirector={handleDeleteDirector} onUpdateDirector={handleUpdateDirector} />
             
             <h2 className="text-2xl font-bold mt-8 mb-4">Movies</h2>
             <input
@@ -190,8 +229,9 @@ const App = () => {
                 placeholder="Search Movies"
                 className="border border-gray-300 rounded-lg p-2 w-full mb-4"
             />
+            
             <NewMovie onAddMovie={handleAddMovie} />
-            <MovieList movies={displayedMovies} onDeleteMovie={handleDeleteMovie} onSelectMovie={handleSelectMovie} />
+            <MovieList movies={displayedMovies} onDeleteMovie={handleDeleteMovie} onSelectMovie={handleSelectMovie} onUpdateMovie={handleUpdateMovie} />
             
             <h2 className="text-2xl font-bold mt-8 mb-4">Reviews</h2>
             {selectedMovieId && (
