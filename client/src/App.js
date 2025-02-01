@@ -7,6 +7,8 @@ import NewDirector from './components/NewDirector';
 import NewMovie from './components/NewMovie';
 import ReviewList from './components/ReviewList';
 import Header from './components/Header';
+import Home from './components/Home';
+import About from './components/About';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 const App = () => {
@@ -208,7 +210,10 @@ const App = () => {
     return (
         
         <main className="max-w-4xl mx-auto p-4 bg-gray-100">
-            <Header/>
+            
+            
+            <Header />
+                
             
             <h2 className="text-2xl font-bold mb-4">Directors</h2>
             <input
@@ -241,6 +246,7 @@ const App = () => {
                     onDeleteReview={handleDeleteReview} 
                 />
             )}
+                
         </main>
     );
 };
