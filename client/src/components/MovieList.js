@@ -19,30 +19,60 @@ const MovieList = ({ movies, onDeleteMovie, onSelectMovie, onUpdateMovie }) => {
     };
 
     return (
-        <ul className="space-y-2">
+        <ul className="space-y-3">
             {movies.map((movie) => (
-                <li key={movie.id} className="flex justify-between items-center bg-white shadow-md rounded-lg p-4" onClick={() => onSelectMovie(movie.id)}>
+                <li key={movie.id} className="flex justify-between items-center bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => onSelectMovie(movie.id)}>
                     {editingMovie === movie.id ? (
-                        <div>
-                            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-                            <input value={directorId} onChange={(e) => setDirectorId(e.target.value)} placeholder="Director ID" />
-                            <button onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdate(movie.id);
-                            }}>Update</button>
+                        <div className="flex gap-4 items-center">
+                            <input 
+                                value={title} 
+                                onChange={(e) => setTitle(e.target.value)} 
+                                placeholder="Title"
+                                className="px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                            <input 
+                                value={directorId} 
+                                onChange={(e) => setDirectorId(e.target.value)} 
+                                placeholder="Director ID"
+                                className="px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none w-24"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleUpdate(movie.id);
+                                }}
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                            >
+                                Save
+                            </button>
                         </div>
                     ) : (
-                        <span>{movie.title} (Director: {movie.director})</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-lg font-medium text-gray-800">{movie.title}</span>
+                            <span className="text-sm text-gray-500">Director: {movie.director}</span>
+                        </div>
                     )}
-                    <div>
-                        <button onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(movie);
-                        }}>Edit</button>
-                        <button className="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-700" onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteMovie(movie.id);
-                        }}>Delete</button>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(movie);
+                            }}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                        >
+                            Edit
+                        </button>
+                        <button 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteMovie(movie.id);
+                            }}
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+                        >
+                            Delete
+                        </button>
                     </div>
                 </li>
             ))}

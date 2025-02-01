@@ -204,18 +204,18 @@ const App = () => {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <nav className="bg-blue-600 text-white p-4">
+            <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 shadow-lg">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">Movie App</h1>
-                    <div className="space-x-4">
+                    <h1 className="text-3xl font-bold tracking-tight">🎬 Movie App</h1>
+                    <div className="space-x-6">
                         <NavLink to="/" className={({ isActive }) => 
-                            isActive ? "text-blue-200" : "hover:text-blue-200"
+                            `transition-colors px-4 py-2 rounded-lg ${isActive ? "bg-white text-blue-600" : "hover:bg-blue-700"}`
                         }>Home</NavLink>
                         <NavLink to="/movies" className={({ isActive }) => 
-                            isActive ? "text-blue-200" : "hover:text-blue-200"
+                            `transition-colors px-4 py-2 rounded-lg ${isActive ? "bg-white text-blue-600" : "hover:bg-blue-700"}`
                         }>Movies</NavLink>
                         <NavLink to="/about" className={({ isActive }) => 
-                            isActive ? "text-blue-200" : "hover:text-blue-200"
+                            `transition-colors px-4 py-2 rounded-lg ${isActive ? "bg-white text-blue-600" : "hover:bg-blue-700"}`
                         }>About</NavLink>
                     </div>
                 </div>
@@ -228,14 +228,16 @@ const App = () => {
                     <Route path="/movies" element={
                         <>
                             <div className="space-y-8">
-                                <section>
-                                    <h2 className="text-2xl font-bold mb-4">Directors</h2>
+                                <section className="bg-white rounded-xl shadow-md p-6 mb-8">
+                                    <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                                        <span className="mr-2">🎭</span> Directors
+                                    </h2>
                                     <input
                                         type="text"
                                         value={searchDirector}
                                         onChange={(e) => setSearchDirector(e.target.value)}
                                         placeholder="Search Directors"
-                                        className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                                        className="w-full mb-6 px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                     />
                                     <NewDirector onAddDirector={handleAddDirector} />
                                     <DirectorList 
