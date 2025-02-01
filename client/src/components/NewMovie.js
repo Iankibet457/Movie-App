@@ -6,7 +6,11 @@ const NewMovie = ({ onAddMovie }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onAddMovie({ title, director_id: directorId });
+        const newMovie = {
+            title: title.trim(),
+            director_id: parseInt(directorId)
+        };
+        onAddMovie(newMovie);
         setTitle('');
         setDirectorId('');
     };

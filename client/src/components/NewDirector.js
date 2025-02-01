@@ -7,7 +7,12 @@ const NewDirector = ({ onAddDirector }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onAddDirector({ name, age, gender });
+        const newDirector = {
+            name: name.trim(),
+            age: age ? parseInt(age) : null,
+            gender: gender.trim() || null
+        };
+        onAddDirector(newDirector);
         setName('');
         setAge('');
         setGender('');

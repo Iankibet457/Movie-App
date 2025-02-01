@@ -8,7 +8,7 @@ import MovieList from './components/MovieList';
 import NewDirector from './components/NewDirector';
 import NewMovie from './components/NewMovie';
 import ReviewList from './components/ReviewList';
-import Header from './components/Header';
+// import Header from './components/Header';
 import Home from './components/Home';
 import About from './components/About';
 // import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
@@ -92,16 +92,27 @@ const App = () => {
     );
 
     const handleAddDirector = (newDirector) => {
+        const directorToAdd = {
+            name: newDirector.name,
+            age: newDirector.age ? parseInt(newDirector.age) : null,
+            gender: newDirector.gender || null
+        };
+
         fetch('https://movie-deployment-1.onrender.com/api/directors', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(newDirector),
+            body: JSON.stringify(directorToAdd),
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            setDirectors([...directors, data]);
+            setDirectors(prevDirectors => [...prevDirectors, data]);
         })
         .catch(error => {
             console.error('Error adding director:', error);
@@ -116,9 +127,19 @@ const App = () => {
             },
             body: JSON.stringify(newMovie),
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            setMovies([...movies, data]);
+            const directorName = directors.find(d => d.id === parseInt(newMovie.director_id))?.name;
+            const movieWithDirector = {
+                ...data,
+                director: directorName
+            };
+            setMovies(prevMovies => [...prevMovies, movieWithDirector]);
         })
         .catch(error => {
             console.error('Error adding movie:', error);
@@ -167,7 +188,11 @@ const App = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(updatedDirector),
+            body: JSON.stringify({
+                name: updatedDirector.name,
+                age: updatedDirector.age,
+                gender: updatedDirector.gender
+            }),
         })
         .then(response => {
             if (!response.ok) {
@@ -176,29 +201,50 @@ const App = () => {
             return response.json();
         })
         .then(data => {
-            setDirectors(directors.map(director => 
-                director.id === updatedDirector.id ? data : director
-            ));
+            setDirectors(prevDirectors => 
+                prevDirectors.map(director => 
+                    director.id === updatedDirector.id ? data : director
+                )
+            );
         })
         .catch(error => {
             console.error('Error updating director:', error);
+            alert('Failed to update director. Please try again.');
         });
     };
 
     const handleUpdateMovie = (updatedMovie) => {
         fetch(`https://movie-deployment-1.onrender.com/api/movies/${updatedMovie.id}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(updatedMovie),
+            body: JSON.stringify({
+                title: updatedMovie.title,
+                director_id: updatedMovie.director_id
+            }),
         })
-        .then(response => response.json())
-        .then(() => {
-            setMovies(movies.map(movie => movie.id === updatedMovie.id ? updatedMovie : movie));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const directorName = directors.find(d => d.id === parseInt(updatedMovie.director_id))?.name;
+            const movieWithDirector = {
+                ...data,
+                director: directorName
+            };
+            setMovies(prevMovies => 
+                prevMovies.map(movie => 
+                    movie.id === updatedMovie.id ? movieWithDirector : movie
+                )
+            );
         })
         .catch(error => {
             console.error('Error updating movie:', error);
+            alert('Failed to update movie. Please try again.');
         });
     };
 
