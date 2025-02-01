@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Routes, Route, NavLink } from 'react-router-dom';
+import './App.css';
 
 // import Search from './components/Search';
 import DirectorList from './components/DirectorList';
@@ -7,8 +9,8 @@ import NewDirector from './components/NewDirector';
 import NewMovie from './components/NewMovie';
 import ReviewList from './components/ReviewList';
 import Header from './components/Header';
-// import Home from './components/Home';
-// import About from './components/About';
+import Home from './components/Home';
+import About from './components/About';
 // import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 const App = () => {
@@ -20,29 +22,17 @@ const App = () => {
     const [searchMovie, setSearchMovie] = useState("");
 
     useEffect(() => {
-        fetch("https://movie-deployment-1.onrender.com/api/directors")
-            .then((response) => response.json())
-            .then((data) => setDirectors(data));
-    }, []);
+        // Fetch directors
+        fetch('https://movie-deployment-1.onrender.com/api/directors')
+            .then(response => response.json())
+            .then(data => setDirectors(data))
+            .catch(error => console.error('Error fetching directors:', error));
 
-    useEffect(() => {
-        fetch("https://movie-deployment-1.onrender.com/api/movies")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                if (Array.isArray(data)) {
-                    setMovies(data);
-                } else {
-                    console.error('Expected an array but got:', data);
-                }
-            })
-            .catch((error) => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+        // Fetch movies
+        fetch('https://movie-deployment-1.onrender.com/api/movies')
+            .then(response => response.json())
+            .then(data => setMovies(data))
+            .catch(error => console.error('Error fetching movies:', error));
     }, []);
 
     const fetchReviews = (movieId) => {
@@ -102,7 +92,7 @@ const App = () => {
     );
 
     const handleAddDirector = (newDirector) => {
-        fetch("https://movie-deployment-1.onrender.com/api/directors", {
+        fetch('https://movie-deployment-1.onrender.com/api/directors', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -111,16 +101,15 @@ const App = () => {
         })
         .then(response => response.json())
         .then(data => {
-            
-            setDirectors([...directors, { ...newDirector, id: data.id }]);
+            setDirectors([...directors, data]);
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('Error adding director:', error);
         });
     };
 
     const handleAddMovie = (newMovie) => {
-        fetch("https://movie-deployment-1.onrender.com/api/movies", {
+        fetch('https://movie-deployment-1.onrender.com/api/movies', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -129,31 +118,30 @@ const App = () => {
         })
         .then(response => response.json())
         .then(data => {
-           
-            setMovies([...movies, { ...newMovie, id: data.id }]);
+            setMovies([...movies, data]);
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('Error adding movie:', error);
         });
     };
 
     const handleDeleteDirector = (id) => {
-    fetch(`https://movie-deployment-1.onrender.com/api/directors/${id}`, {
-        method: 'DELETE',
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(() => {
-        setDirectors(directors.filter(director => director.id !== id));
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-};
+        fetch(`https://movie-deployment-1.onrender.com/api/directors/${id}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(() => {
+            setDirectors(directors.filter(director => director.id !== id));
+        })
+        .catch(error => {
+            console.error('Error deleting director:', error);
+        });
+    };
 
     const handleDeleteMovie = (id) => {
         fetch(`https://movie-deployment-1.onrender.com/api/movies/${id}`, {
@@ -169,7 +157,7 @@ const App = () => {
             setMovies(movies.filter(movie => movie.id !== id));
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('Error deleting movie:', error);
         });
     };
 
@@ -181,12 +169,19 @@ const App = () => {
             },
             body: JSON.stringify(updatedDirector),
         })
-        .then(response => response.json())
-        .then(() => {
-            setDirectors(directors.map(director => director.id === updatedDirector.id ? updatedDirector : director));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setDirectors(directors.map(director => 
+                director.id === updatedDirector.id ? data : director
+            ));
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('Error updating director:', error);
         });
     };
 
@@ -203,51 +198,87 @@ const App = () => {
             setMovies(movies.map(movie => movie.id === updatedMovie.id ? updatedMovie : movie));
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('Error updating movie:', error);
         });
     };
 
     return (
-        
-        <main className="max-w-4xl mx-auto p-4 bg-gray-100">
-            
-            
-            <Header />
-                
-            
-            <h2 className="text-2xl font-bold mb-4">Directors</h2>
-            <input
-                type="text"
-                value={searchDirector}
-                onChange={(e) => setSearchDirector(e.target.value)}
-                placeholder="Search Directors"
-                className="border border-gray-300 rounded-lg p-2 w-full mb-4"
-            />
-            <NewDirector onAddDirector={handleAddDirector} />
-            <DirectorList directors={displayedDirectors} onDeleteDirector={handleDeleteDirector} onUpdateDirector={handleUpdateDirector} />
-            
-            <h2 className="text-2xl font-bold mt-8 mb-4">Movies</h2>
-            <input
-                type="text"
-                value={searchMovie}
-                onChange={(e) => setSearchMovie(e.target.value)}
-                placeholder="Search Movies"
-                className="border border-gray-300 rounded-lg p-2 w-full mb-4"
-            />
-            
-            <NewMovie onAddMovie={handleAddMovie} />
-            <MovieList movies={displayedMovies} onDeleteMovie={handleDeleteMovie} onSelectMovie={handleSelectMovie} onUpdateMovie={handleUpdateMovie} />
-            
-            <h2 className="text-2xl font-bold mt-8 mb-4">Reviews</h2>
-            {selectedMovieId && (
-                <ReviewList 
-                    reviews={reviews} 
-                    onAddReview={handleAddReview} 
-                    onDeleteReview={handleDeleteReview} 
-                />
-            )}
-                
-        </main>
+        <div className="min-h-screen bg-gray-100">
+            <nav className="bg-blue-600 text-white p-4">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">Movie App</h1>
+                    <div className="space-x-4">
+                        <NavLink to="/" className={({ isActive }) => 
+                            isActive ? "text-blue-200" : "hover:text-blue-200"
+                        }>Home</NavLink>
+                        <NavLink to="/movies" className={({ isActive }) => 
+                            isActive ? "text-blue-200" : "hover:text-blue-200"
+                        }>Movies</NavLink>
+                        <NavLink to="/about" className={({ isActive }) => 
+                            isActive ? "text-blue-200" : "hover:text-blue-200"
+                        }>About</NavLink>
+                    </div>
+                </div>
+            </nav>
+
+            <main className="max-w-7xl mx-auto p-4">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/movies" element={
+                        <>
+                            <div className="space-y-8">
+                                <section>
+                                    <h2 className="text-2xl font-bold mb-4">Directors</h2>
+                                    <input
+                                        type="text"
+                                        value={searchDirector}
+                                        onChange={(e) => setSearchDirector(e.target.value)}
+                                        placeholder="Search Directors"
+                                        className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                                    />
+                                    <NewDirector onAddDirector={handleAddDirector} />
+                                    <DirectorList 
+                                        directors={displayedDirectors} 
+                                        onDeleteDirector={handleDeleteDirector} 
+                                        onUpdateDirector={handleUpdateDirector} 
+                                    />
+                                </section>
+
+                                <section>
+                                    <h2 className="text-2xl font-bold mb-4">Movies</h2>
+                                    <input
+                                        type="text"
+                                        value={searchMovie}
+                                        onChange={(e) => setSearchMovie(e.target.value)}
+                                        placeholder="Search Movies"
+                                        className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                                    />
+                                    <NewMovie onAddMovie={handleAddMovie} />
+                                    <MovieList 
+                                        movies={displayedMovies} 
+                                        onDeleteMovie={handleDeleteMovie} 
+                                        onSelectMovie={handleSelectMovie} 
+                                        onUpdateMovie={handleUpdateMovie} 
+                                    />
+                                </section>
+
+                                {selectedMovieId && (
+                                    <section>
+                                        <h2 className="text-2xl font-bold mb-4">Reviews</h2>
+                                        <ReviewList 
+                                            reviews={reviews} 
+                                            onAddReview={handleAddReview} 
+                                            onDeleteReview={handleDeleteReview}
+                                        />
+                                    </section>
+                                )}
+                            </div>
+                        </>
+                    } />
+                </Routes>
+            </main>
+        </div>
     );
 };
 

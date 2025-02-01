@@ -14,7 +14,20 @@ const DirectorList = ({ directors, onDeleteDirector, onUpdateDirector }) => {
     };
 
     const handleUpdate = (id) => {
-        onUpdateDirector({ id, name, age, gender });
+        // Validate inputs
+        if (!name.trim()) {
+            alert('Name is required');
+            return;
+        }
+        
+        const updatedDirector = {
+            id,
+            name: name.trim(),
+            age: age ? parseInt(age) : null,
+            gender: gender.trim() || null
+        };
+        
+        onUpdateDirector(updatedDirector);
         setEditingDirector(null);
         setName('');
         setAge('');
