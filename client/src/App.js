@@ -8,7 +8,7 @@ import MovieList from './components/MovieList';
 import NewDirector from './components/NewDirector';
 import NewMovie from './components/NewMovie';
 import ReviewList from './components/ReviewList';
-// import Header from './components/Header';
+import Header from './components/Header';
 import Home from './components/Home';
 import About from './components/About';
 // import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
@@ -184,7 +184,7 @@ const App = () => {
 
     const handleUpdateDirector = (updatedDirector) => {
         fetch(`https://movie-deployment-1.onrender.com/api/directors/${updatedDirector.id}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
