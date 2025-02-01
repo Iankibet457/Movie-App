@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
-import Search from './components/Search';
+// import Search from './components/Search';
 import DirectorList from './components/DirectorList';
 import MovieList from './components/MovieList';
 import NewDirector from './components/NewDirector';
 import NewMovie from './components/NewMovie';
 import ReviewList from './components/ReviewList';
 import Header from './components/Header';
-import Home from './components/Home';
-import About from './components/About';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+// import Home from './components/Home';
+// import About from './components/About';
+// import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 const App = () => {
     const [directors, setDirectors] = useState([]);
