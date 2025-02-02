@@ -244,7 +244,8 @@ const App = () => {
             const directorName = directors.find(d => d.id === parseInt(updatedMovie.director_id))?.name;
             const movieWithDirector = {
                 ...data,
-                director: directorName
+                director: directorName,
+                director_id: parseInt(updatedMovie.director_id)
             };
             setMovies(prevMovies => 
                 prevMovies.map(movie => 
@@ -257,7 +258,6 @@ const App = () => {
             alert('Failed to update movie. Please try again.');
         });
     };
-
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 shadow-lg">
