@@ -55,12 +55,23 @@ const App = () => {
                 },
                 body: JSON.stringify(newReview),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
-                setReviews([...reviews, { ...newReview, id: data.id }]);
+                const movie = movies.find(m => m.id === selectedMovieId);
+                const reviewWithMovie = {
+                    ...data,
+                    movie_title: movie ? movie.title : 'Unknown Movie'
+                };
+                setReviews(prevReviews => [...prevReviews, reviewWithMovie]);
             })
             .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
+                console.error('Error adding review:', error);
+                alert('Failed to add review. Please try again.');
             });
         }
     };
@@ -258,7 +269,32 @@ const App = () => {
             alert('Failed to update movie. Please try again.');
         });
     };
-    
+    const handleUpdateReview = (reviewId, updatedData) => {
+        fetch(`https://movie-deployment-1.onrender.com/api/reviews/${reviewId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setReviews(prevReviews => 
+                prevReviews.map(review => 
+                    review.id === reviewId ? data : review
+                )
+            );
+        })
+        .catch(error => {
+            console.error('Error updating review:', error);
+            alert('Failed to update review. Please try again.');
+        });
+    };
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 shadow-lg">
@@ -329,6 +365,8 @@ const App = () => {
                                             reviews={reviews} 
                                             onAddReview={handleAddReview} 
                                             onDeleteReview={handleDeleteReview}
+                                            onUpdateReview={handleUpdateReview}
+                                            selectedMovieId={selectedMovieId}
                                         />
                                     </section>
                                 )}
