@@ -258,6 +258,7 @@ const App = () => {
             alert('Failed to update movie. Please try again.');
         });
     };
+    
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 shadow-lg">
