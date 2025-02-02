@@ -91,19 +91,17 @@ const App = () => {
         movie?.title?.toLowerCase().includes(searchMovie.toLowerCase())
     );
 
-    const handleAddDirector = (newDirector) => {
-        const directorToAdd = {
-            name: newDirector.name,
-            age: newDirector.age ? parseInt(newDirector.age) : null,
-            gender: newDirector.gender || null
-        };
-
+    const handleCreateDirector = (newDirector) => {
         fetch('https://movie-deployment-1.onrender.com/api/directors', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(directorToAdd),
+            body: JSON.stringify({
+                name: newDirector.name,
+                age: newDirector.age,
+                gender: newDirector.gender
+            }),
         })
         .then(response => {
             if (!response.ok) {
@@ -112,20 +110,30 @@ const App = () => {
             return response.json();
         })
         .then(data => {
-            setDirectors(prevDirectors => [...prevDirectors, data]);
+            const createdDirector = {
+                id: data.id,
+                name: newDirector.name,
+                age: newDirector.age,
+                gender: newDirector.gender
+            };
+            setDirectors(prevDirectors => [...prevDirectors, createdDirector]);
         })
         .catch(error => {
-            console.error('Error adding director:', error);
+            console.error('Error creating director:', error);
+            alert('Failed to create director. Please try again.');
         });
     };
-
-    const handleAddMovie = (newMovie) => {
+    
+    const handleCreateMovie = (newMovie) => {
         fetch('https://movie-deployment-1.onrender.com/api/movies', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(newMovie),
+            body: JSON.stringify({
+                title: newMovie.title,
+                director_id: newMovie.director_id
+            }),
         })
         .then(response => {
             if (!response.ok) {
@@ -134,18 +142,20 @@ const App = () => {
             return response.json();
         })
         .then(data => {
-            const directorName = directors.find(d => d.id === parseInt(newMovie.director_id))?.name;
-            const movieWithDirector = {
-                ...data,
-                director: directorName
+            const director = directors.find(d => d.id === parseInt(newMovie.director_id));
+            const createdMovie = {
+                id: data.id,
+                title: newMovie.title,
+                director: director ? director.name : 'Unknown Director',
+                director_id: newMovie.director_id
             };
-            setMovies(prevMovies => [...prevMovies, movieWithDirector]);
+            setMovies(prevMovies => [...prevMovies, createdMovie]);
         })
         .catch(error => {
-            console.error('Error adding movie:', error);
+            console.error('Error creating movie:', error);
+            alert('Failed to create movie. Please try again.');
         });
     };
-
     const handleDeleteDirector = (id) => {
         fetch(`https://movie-deployment-1.onrender.com/api/directors/${id}`, {
             method: 'DELETE',
@@ -285,7 +295,7 @@ const App = () => {
                                         placeholder="Search Directors"
                                         className="w-full mb-6 px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                                     />
-                                    <NewDirector onAddDirector={handleAddDirector} />
+                                    <NewDirector onAddDirector={handleCreateDirector}/>
                                     <DirectorList 
                                         directors={displayedDirectors} 
                                         onDeleteDirector={handleDeleteDirector} 
@@ -302,7 +312,7 @@ const App = () => {
                                         placeholder="Search Movies"
                                         className="border border-gray-300 rounded-lg p-2 w-full mb-4"
                                     />
-                                    <NewMovie onAddMovie={handleAddMovie} />
+                                    <NewMovie onAddMovie={handleCreateMovie} />
                                     <MovieList 
                                         movies={displayedMovies} 
                                         onDeleteMovie={handleDeleteMovie} 
