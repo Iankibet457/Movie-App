@@ -80,6 +80,7 @@ python app.py
 ```
 
 The backend API will be available at https://movie-deployment-1.onrender.com
+The backend GitHub link is https://github.com/Iankibet457/Movie_Deployment
 
 ## API Endpoints
 
