@@ -48,7 +48,7 @@ npm install
 npm start
 ```
 
-The frontend will be available at http://localhost:3000
+The frontend will be available at (https://moringamovie.netlify.app/)
 
 ### Backend Setup
 
